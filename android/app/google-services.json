@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "456012305296",
+    "project_id": "startpoint-atvee",
+    "storage_bucket": "startpoint-atvee.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:456012305296:android:55df513fc6c4e632d6d915",
+        "android_client_info": {
+          "package_name": "com.startpoint.atvee"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "456012305296-r1el425f1cjh9ke3834obkoapn3o1feg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD27X-P6W58q4INHp-TEvwURrhUYxhcCb4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "456012305296-r1el425f1cjh9ke3834obkoapn3o1feg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
