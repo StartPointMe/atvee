@@ -37,12 +37,19 @@ dependencies:
   firebase_storage: ^10.3.11
   flutter:
     sdk: flutter
+  flutter_launcher_icons: ^0.10.0
   image_picker: ^0.8.6
 
 dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: false
+  image_path: "lib/resources/icon-atvee.jpeg"
+  min_sdk_android: 21 # android min sdk min:16, default 21
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -80,3 +87,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+  assets:
+    - lib/resources/
+    - lib/resources/icon-atvee.jpeg
