@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:atvee/views/OpeningScreen.dart';
+import 'package:atvee/screens/opening/opening_screen.dart';
 
 class AppRoutes {
   AppRoutes._();

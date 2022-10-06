@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../routes.dart';
+import '../../themes/routes.dart';
 
 class OpeningScreen extends StatefulWidget {
   @override
