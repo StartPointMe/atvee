@@ -33,7 +33,7 @@ class Utils {
         borderRadius: BorderRadius.circular(10),
         child: Padding(
           padding: const EdgeInsets.only(left: 20),
-          child: Container(
+          child: SizedBox(
             width: mediaQuery.size.width / 1.4,
             child: TextFormField(
               controller: fieldController,
@@ -43,5 +43,26 @@ class Utils {
             ),
           ),
         ));
+  }
+
+  Widget createLabel(String label) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(label),
+    );
+  }
+
+  Widget createLabelAndField(
+      TextEditingController fieldController, String fieldLabel) {
+    return Column(
+      children: <Widget>[
+        Padding(
+            padding: EdgeInsets.only(
+                left: mediaQuery.size.width / 15,
+                bottom: mediaQuery.size.height / 120),
+            child: createLabel(fieldLabel)),
+        createField(fieldController)
+      ],
+    );
   }
 }

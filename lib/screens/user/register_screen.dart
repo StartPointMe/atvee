@@ -10,8 +10,12 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenViewState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _repasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -21,18 +25,32 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
 
     Utils utils = Utils(mediaQuery);
 
-    final emailField = utils.createField(_emailController);
-    final passwordField = utils.createField(_passwordController);
-
     final fields = SizedBox(
-      width: width,
+      width: width / 1.2,
       child: Column(
-        children: [
+        children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(bottom: height / 40),
-            child: emailField,
-          ),
-          passwordField
+              padding: EdgeInsets.only(bottom: height / 30),
+              child: utils.createLabelAndField(
+                  _firstNameController, "Primeiro Nome")),
+          Padding(
+              padding: EdgeInsets.only(bottom: height / 30),
+              child: utils.createLabelAndField(
+                  _lastNameController, "Último Nome")),
+          Padding(
+              padding: EdgeInsets.only(bottom: height / 30),
+              child: utils.createLabelAndField(
+                  _phoneNumberController, "Número de Telefone")),
+          Padding(
+              padding: EdgeInsets.only(bottom: height / 30),
+              child: utils.createLabelAndField(_emailController, "E-mail")),
+          Padding(
+              padding: EdgeInsets.only(bottom: height / 30),
+              child: utils.createLabelAndField(_passwordController, "Senha")),
+          Padding(
+              padding: EdgeInsets.only(bottom: height / 30),
+              child: utils.createLabelAndField(
+                  _repasswordController, "Senha novamente"))
         ],
       ),
     );
@@ -46,8 +64,6 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
               borderRadius: BorderRadius.circular(10),
             ))),
         onPressed: () async {
-          // final user = firebaseAuth.signIn(
-          //     _emailController.text, _passwordController.text);
           utils.showErrorSnack(context, "cadastro");
         },
         child: Padding(
@@ -64,14 +80,13 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
         backgroundColor: Colors.amber,
         body: Form(
           key: _formKey,
-          child: Column(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(bottom: height / 20),
-                child: fields,
-              ),
-              registerButton
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [fields, registerButton],
+              )
             ],
           ),
         ),
