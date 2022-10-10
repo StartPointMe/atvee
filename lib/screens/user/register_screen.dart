@@ -1,4 +1,7 @@
+import 'package:atvee/bloc/models/regular_user.dart';
 import 'package:atvee/themes/custom_widget.dart';
+import 'package:atvee/themes/validation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -17,6 +20,8 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _repasswordController = TextEditingController();
 
+  RegularUser? _regularUser;
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -24,6 +29,26 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
     final width = mediaQuery.size.width;
 
     CustomWidget customWidget = CustomWidget(mediaQuery);
+    Validation validation = Validation();
+
+    void registerUser(RegularUser regularUser) async {
+      try {
+        String emailId = regularUser.email;
+        CollectionReference userdata =
+            FirebaseFirestore.instance.collection('userdata');
+        await userdata.doc(emailId).set({
+          'first_name': regularUser.firstName,
+          'last_name': regularUser.lastName,
+          'phone_number': regularUser.phoneNumber,
+          'image_url': '',
+        });
+
+        // ignore: use_build_context_synchronously
+        customWidget.showErrorSnack(context, emailId);
+      } catch (error) {
+        customWidget.showErrorSnack(context, error.toString());
+      }
+    }
 
     final fields = SizedBox(
       width: width / 1.2,
@@ -40,7 +65,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
           Padding(
               padding: EdgeInsets.only(bottom: height / 30),
               child: customWidget.createTextFieldWithLabel(
-                  _phoneNumberController, "Número de Telefone", Colors.white)),
+                  _phoneNumberController, "Número de Celular", Colors.white)),
           Padding(
               padding: EdgeInsets.only(bottom: height / 30),
               child: customWidget.createTextFieldWithLabel(
@@ -66,7 +91,22 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
               borderRadius: BorderRadius.circular(10),
             ))),
         onPressed: () async {
-          customWidget.showErrorSnack(context, "cadastro");
+          _regularUser = RegularUser(
+              _firstNameController.text,
+              _lastNameController.text,
+              '',
+              _emailController.text,
+              _phoneNumberController.text,
+              '');
+
+          if (!validation.validEmail(_emailController.text)) {
+            customWidget.showErrorSnack(context, "Email inválido");
+          } else if (!validation
+              .validPhoneNumber(_phoneNumberController.text)) {
+            customWidget.showErrorSnack(context, "Número de celular inválido");
+          } else {
+            registerUser(_regularUser!);
+          }
         },
         child: Padding(
             padding: EdgeInsets.fromLTRB(
@@ -82,14 +122,16 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
         backgroundColor: Colors.amber,
         body: Form(
           key: _formKey,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [fields, registerButton],
-              )
-            ],
+          child: SingleChildScrollView(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [fields, registerButton],
+                )
+              ],
+            ),
           ),
         ),
       ),
