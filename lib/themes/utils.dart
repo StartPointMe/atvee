@@ -37,8 +37,9 @@ class Utils {
             width: mediaQuery.size.width / 1.4,
             child: TextFormField(
               controller: fieldController,
-              style: GoogleFonts.anton(fontSize: 10, color: Colors.white),
-              cursorColor: Colors.white,
+              style: GoogleFonts.anton(
+                  fontSize: mediaQuery.size.width / 24, color: Colors.black),
+              cursorColor: Colors.black,
               decoration: const InputDecoration(border: InputBorder.none),
             ),
           ),
