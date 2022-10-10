@@ -1,5 +1,6 @@
 import 'package:atvee/bloc/models/regular_user.dart';
 import 'package:atvee/themes/custom_widget.dart';
+import 'package:atvee/themes/validation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -28,6 +29,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
     final width = mediaQuery.size.width;
 
     CustomWidget customWidget = CustomWidget(mediaQuery);
+    Validation validation = Validation();
 
     void registerUser(RegularUser regularUser) async {
       try {
@@ -63,7 +65,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
           Padding(
               padding: EdgeInsets.only(bottom: height / 30),
               child: customWidget.createTextFieldWithLabel(
-                  _phoneNumberController, "Número de Telefone", Colors.white)),
+                  _phoneNumberController, "Número de Celular", Colors.white)),
           Padding(
               padding: EdgeInsets.only(bottom: height / 30),
               child: customWidget.createTextFieldWithLabel(
@@ -97,7 +99,14 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
               _phoneNumberController.text,
               '');
 
-          registerUser(_regularUser!);
+          if (!validation.validEmail(_emailController.text)) {
+            customWidget.showErrorSnack(context, "Email inválido");
+          } else if (!validation
+              .validPhoneNumber(_phoneNumberController.text)) {
+            customWidget.showErrorSnack(context, "Número de celular inválido");
+          } else {
+            registerUser(_regularUser!);
+          }
         },
         child: Padding(
             padding: EdgeInsets.fromLTRB(
