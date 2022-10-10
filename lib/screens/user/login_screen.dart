@@ -1,5 +1,5 @@
 import 'package:atvee/repository/firebase/firebase_auth.dart';
-import 'package:atvee/themes/utils.dart';
+import 'package:atvee/themes/custom_widget.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,12 +23,17 @@ class _LoginScreenViewState extends State<LoginScreen> {
     final mediaQuery = MediaQuery.of(context);
     var height = mediaQuery.size.height;
     var width = mediaQuery.size.width;
-    Utils utils = Utils(mediaQuery);
-    FirebaseAuthentication firebaseAuth = FirebaseAuthentication();
 
-    final appIcon = utils.createImage(context, "lib/resources/icon-atvee.jpeg");
-    final emailField = utils.createField(_emailController);
-    final passwordField = utils.createField(_passwordController);
+    CustomWidget customWidget = CustomWidget(mediaQuery);
+
+    // FirebaseAuthentication firebaseAuth = FirebaseAuthentication();
+
+    final appIcon = customWidget.createImage(
+        context, "lib/resources/icon-atvee.jpeg", 4, 1.5);
+    final emailField = customWidget.createTextFieldWithLabel(
+        _emailController, "E-mail", Colors.white);
+    final passwordField = customWidget.createPasswordFieldWithLabel(
+        _passwordController, "Senha", Colors.white);
 
     final registerAnchor = MaterialButton(
         splashColor: Colors.transparent,
@@ -62,22 +67,8 @@ class _LoginScreenViewState extends State<LoginScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Padding(padding: EdgeInsets.only(top: height / 30)),
-        Text(
-          "Email",
-          style: GoogleFonts.roboto(
-              fontSize: width / 24,
-              color: Colors.white,
-              fontWeight: FontWeight.bold),
-        ),
         emailField,
         Padding(padding: EdgeInsets.only(top: height / 30)),
-        Text(
-          "Senha",
-          style: GoogleFonts.roboto(
-              fontSize: width / 24,
-              color: Colors.white,
-              fontWeight: FontWeight.bold),
-        ),
         passwordField
       ],
     );
@@ -93,7 +84,7 @@ class _LoginScreenViewState extends State<LoginScreen> {
         onPressed: () async {
           // final user = firebaseAuth.signIn(
           //     _emailController.text, _passwordController.text);
-          utils.showErrorSnack(context, "login");
+          customWidget.showErrorSnack(context, "login");
         },
         child: Padding(
             padding: EdgeInsets.fromLTRB(

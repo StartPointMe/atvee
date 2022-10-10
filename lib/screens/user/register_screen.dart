@@ -1,4 +1,4 @@
-import 'package:atvee/themes/utils.dart';
+import 'package:atvee/themes/custom_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -23,7 +23,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
     final height = mediaQuery.size.height;
     final width = mediaQuery.size.width;
 
-    Utils utils = Utils(mediaQuery);
+    CustomWidget customWidget = CustomWidget(mediaQuery);
 
     final fields = SizedBox(
       width: width / 1.2,
@@ -31,26 +31,28 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
         children: <Widget>[
           Padding(
               padding: EdgeInsets.only(bottom: height / 30),
-              child: utils.createLabelAndField(
-                  _firstNameController, "Primeiro Nome")),
+              child: customWidget.createTextFieldWithLabel(
+                  _firstNameController, "Primeiro Nome", Colors.white)),
           Padding(
               padding: EdgeInsets.only(bottom: height / 30),
-              child: utils.createLabelAndField(
-                  _lastNameController, "Último Nome")),
+              child: customWidget.createTextFieldWithLabel(
+                  _lastNameController, "Último Nome", Colors.white)),
           Padding(
               padding: EdgeInsets.only(bottom: height / 30),
-              child: utils.createLabelAndField(
-                  _phoneNumberController, "Número de Telefone")),
+              child: customWidget.createTextFieldWithLabel(
+                  _phoneNumberController, "Número de Telefone", Colors.white)),
           Padding(
               padding: EdgeInsets.only(bottom: height / 30),
-              child: utils.createLabelAndField(_emailController, "E-mail")),
+              child: customWidget.createTextFieldWithLabel(
+                  _emailController, "E-mail", Colors.white)),
           Padding(
               padding: EdgeInsets.only(bottom: height / 30),
-              child: utils.createLabelAndField(_passwordController, "Senha")),
+              child: customWidget.createPasswordFieldWithLabel(
+                  _passwordController, "Senha", Colors.white)),
           Padding(
               padding: EdgeInsets.only(bottom: height / 30),
-              child: utils.createLabelAndField(
-                  _repasswordController, "Senha novamente"))
+              child: customWidget.createPasswordFieldWithLabel(
+                  _repasswordController, "Senha novamente", Colors.white))
         ],
       ),
     );
@@ -64,7 +66,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
               borderRadius: BorderRadius.circular(10),
             ))),
         onPressed: () async {
-          utils.showErrorSnack(context, "cadastro");
+          customWidget.showErrorSnack(context, "cadastro");
         },
         child: Padding(
             padding: EdgeInsets.fromLTRB(
