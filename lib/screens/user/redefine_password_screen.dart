@@ -1,4 +1,4 @@
-import 'package:atvee/themes/utils.dart';
+import 'package:atvee/themes/custom_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -19,9 +19,10 @@ class _RedefinePasswordScreenViewState extends State<RedefinePasswordScreen> {
     final height = mediaQuery.size.height;
     final width = mediaQuery.size.width;
 
-    Utils utils = Utils(mediaQuery);
+    CustomWidget customWidget = CustomWidget(mediaQuery);
 
-    final emailField = utils.createField(_emailController);
+    final emailField = customWidget.createTextFieldWithLabel(
+        _emailController, "E-mail", Colors.white);
 
     final fields = SizedBox(
       width: width,
@@ -46,7 +47,7 @@ class _RedefinePasswordScreenViewState extends State<RedefinePasswordScreen> {
         onPressed: () async {
           // final user = firebaseAuth.signIn(
           //     _emailController.text, _passwordController.text);
-          utils.showErrorSnack(context, "redefinir");
+          customWidget.showErrorSnack(context, "redefinir");
         },
         child: Padding(
             padding: EdgeInsets.fromLTRB(
