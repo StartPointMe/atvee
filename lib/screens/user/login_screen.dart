@@ -1,5 +1,5 @@
-import 'package:atvee/repository/firebase/firebase_auth.dart';
 import 'package:atvee/themes/custom_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,7 +26,22 @@ class _LoginScreenViewState extends State<LoginScreen> {
 
     CustomWidget customWidget = CustomWidget(mediaQuery);
 
-    // FirebaseAuthentication firebaseAuth = FirebaseAuthentication();
+    Future _signIn(String email, String password) async {
+      try {
+        User? user = (await FirebaseAuth.instance
+                .signInWithEmailAndPassword(email: email, password: password))
+            .user;
+
+        if (user!.emailVerified) {
+          Navigator.of(context).pushNamed(AppRoutes.home);
+        } else {
+          customWidget.showSnack(context,
+              "Por favor, verifique o seu e-mail antes de efetuar o login");
+        }
+      } on FirebaseAuthException catch (error) {
+        customWidget.showSnack(context, error.message.toString());
+      }
+    }
 
     final appIcon = customWidget.createImage(
         context, "lib/resources/icon-atvee.jpeg", 4, 1.5);
@@ -82,9 +97,7 @@ class _LoginScreenViewState extends State<LoginScreen> {
               borderRadius: BorderRadius.circular(10),
             ))),
         onPressed: () async {
-          // final user = firebaseAuth.signIn(
-          //     _emailController.text, _passwordController.text);
-          customWidget.showErrorSnack(context, "login");
+          _signIn(_emailController.text, _passwordController.text);
         },
         child: Padding(
             padding: EdgeInsets.fromLTRB(
