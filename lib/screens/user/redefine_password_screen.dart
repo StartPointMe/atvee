@@ -45,9 +45,7 @@ class _RedefinePasswordScreenViewState extends State<RedefinePasswordScreen> {
               borderRadius: BorderRadius.circular(10),
             ))),
         onPressed: () async {
-          // final user = firebaseAuth.signIn(
-          //     _emailController.text, _passwordController.text);
-          customWidget.showErrorSnack(context, "redefinir");
+          customWidget.showSnack(context, "redefinir");
         },
         child: Padding(
             padding: EdgeInsets.fromLTRB(

@@ -1,7 +1,11 @@
-import 'package:atvee/bloc/models/regular_user.dart';
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
+import 'package:atvee/bloc/models/professional_user.dart';
 import 'package:atvee/themes/custom_widget.dart';
+import 'package:atvee/themes/routes.dart';
 import 'package:atvee/themes/validation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -20,7 +24,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _repasswordController = TextEditingController();
 
-  RegularUser? _regularUser;
+  ProfessionalUser? _professionalUser;
 
   @override
   Widget build(BuildContext context) {
@@ -31,22 +35,42 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
     CustomWidget customWidget = CustomWidget(mediaQuery);
     Validation validation = Validation();
 
-    void registerUser(RegularUser regularUser) async {
+    void _registerUser(ProfessionalUser professionalUser) async {
       try {
-        String emailId = regularUser.email;
         CollectionReference userdata =
-            FirebaseFirestore.instance.collection('userdata');
-        await userdata.doc(emailId).set({
-          'first_name': regularUser.firstName,
-          'last_name': regularUser.lastName,
-          'phone_number': regularUser.phoneNumber,
+            FirebaseFirestore.instance.collection('professionals');
+        await userdata.doc(professionalUser.email).set({
+          'first_name': professionalUser.firstName,
+          'last_name': professionalUser.lastName,
+          'phone_number': professionalUser.phoneNumber,
           'image_url': '',
-        });
-
-        // ignore: use_build_context_synchronously
-        customWidget.showErrorSnack(context, emailId);
+          'is_client': professionalUser.isClient
+        }).then((value) => {
+              customWidget.showSnack(context, "Por favor veri"),
+              Future.delayed(const Duration(seconds: 2), () {
+                Navigator.of(context).pushNamed(AppRoutes.user_login);
+              })
+            });
       } catch (error) {
-        customWidget.showErrorSnack(context, error.toString());
+        customWidget.showSnack(context, error.toString());
+      }
+    }
+
+    void _createCredential(ProfessionalUser professionalUser) async {
+      try {
+        await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: professionalUser.email,
+                password: _passwordController.text)
+            .then((value) => {
+                  customWidget.showSnack(context,
+                      "Conta criada com Sucesso! Verifique o seu email para obter acesso."),
+                  Future.delayed(const Duration(seconds: 2), () {
+                    _registerUser(professionalUser);
+                  })
+                });
+      } on FirebaseAuthException catch (error) {
+        customWidget.showSnack(context, error.message.toString());
       }
     }
 
@@ -91,21 +115,25 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
               borderRadius: BorderRadius.circular(10),
             ))),
         onPressed: () async {
-          _regularUser = RegularUser(
+          _professionalUser = ProfessionalUser(
               _firstNameController.text,
               _lastNameController.text,
-              '',
               _emailController.text,
               _phoneNumberController.text,
-              '');
+              '',
+              false);
 
           if (!validation.validEmail(_emailController.text)) {
-            customWidget.showErrorSnack(context, "Email inválido");
+            customWidget.showSnack(context, "Email inválido");
           } else if (!validation
               .validPhoneNumber(_phoneNumberController.text)) {
-            customWidget.showErrorSnack(context, "Número de celular inválido");
+            customWidget.showSnack(context, "Número de celular inválido");
+          } else if (_passwordController.text.length < 6) {
+            customWidget.showSnack(context, "Minímo 6 caracteres");
+          } else if (_passwordController.text != _repasswordController.text) {
+            customWidget.showSnack(context, "Senhas diferentes");
           } else {
-            registerUser(_regularUser!);
+            _createCredential(_professionalUser!);
           }
         },
         child: Padding(
@@ -128,7 +156,13 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
               children: <Widget>[
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [fields, registerButton],
+                  children: [
+                    Padding(
+                        padding: EdgeInsets.only(
+                            top: height / 15, bottom: height / 20),
+                        child: fields),
+                    registerButton
+                  ],
                 )
               ],
             ),

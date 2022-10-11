@@ -37,7 +37,7 @@ class CustomWidget {
         ));
   }
 
-  void showErrorSnack(BuildContext context, String error) {
+  void showSnack(BuildContext context, String error) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(error),
