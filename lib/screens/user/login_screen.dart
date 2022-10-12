@@ -1,4 +1,7 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'package:atvee/themes/custom_widget.dart';
+import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -45,10 +48,10 @@ class _LoginScreenViewState extends State<LoginScreen> {
 
     final appIcon = customWidget.createImage(
         context, "lib/resources/icon-atvee.jpeg", 4, 1.5);
-    final emailField = customWidget.createTextFieldWithLabel(
-        _emailController, "E-mail", Colors.white);
+    final emailField = customWidget.createTextFieldWithLabel(_emailController,
+        "E-mail", "Insira o seu email de cadastro", Colors.white);
     final passwordField = customWidget.createPasswordFieldWithLabel(
-        _passwordController, "Senha", Colors.white);
+        _passwordController, "Senha", "Insira a sua senha", Colors.white);
 
     final registerAnchor = MaterialButton(
         splashColor: Colors.transparent,
@@ -125,11 +128,11 @@ class _LoginScreenViewState extends State<LoginScreen> {
           ],
         ));
 
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Form(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: DoubleBackToCloseApp(
+        snackBar: const SnackBar(content: Text("Toque de novo para sair")),
+        child: Form(
             key: _formKey,
             child: SingleChildScrollView(
               child: Row(
