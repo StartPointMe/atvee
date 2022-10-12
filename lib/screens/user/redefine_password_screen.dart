@@ -1,4 +1,7 @@
 import 'package:atvee/themes/custom_widget.dart';
+import 'package:atvee/themes/routes.dart';
+import 'package:atvee/themes/validation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -21,8 +24,10 @@ class _RedefinePasswordScreenViewState extends State<RedefinePasswordScreen> {
 
     CustomWidget customWidget = CustomWidget(mediaQuery);
 
-    final emailField = customWidget.createTextFieldWithLabel(
-        _emailController, "E-mail", Colors.white);
+    Validation validation = Validation();
+
+    final emailField = customWidget.createTextFieldWithLabel(_emailController,
+        "E-mail", "Insira o seu email de cadastro", Colors.white);
 
     final fields = SizedBox(
       width: width,
@@ -45,7 +50,17 @@ class _RedefinePasswordScreenViewState extends State<RedefinePasswordScreen> {
               borderRadius: BorderRadius.circular(10),
             ))),
         onPressed: () async {
-          customWidget.showSnack(context, "redefinir");
+          if (validation.validEmail(_emailController.text)) {
+            final auth = FirebaseAuth.instance
+                .sendPasswordResetEmail(email: _emailController.text);
+            customWidget.showSnack(
+                context, "Email de redefinição de senha enviado");
+            Future.delayed(const Duration(seconds: 3), () {
+              Navigator.of(context).pushReplacementNamed(AppRoutes.user_login);
+            });
+          } else {
+            customWidget.showSnack(context, "Insira um email válido");
+          }
         },
         child: Padding(
             padding: EdgeInsets.fromLTRB(

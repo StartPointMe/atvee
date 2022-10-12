@@ -45,12 +45,8 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
           'phone_number': professionalUser.phoneNumber,
           'image_url': '',
           'is_client': professionalUser.isClient
-        }).then((value) => {
-              customWidget.showSnack(context, "Por favor veri"),
-              Future.delayed(const Duration(seconds: 2), () {
-                Navigator.of(context).pushNamed(AppRoutes.user_login);
-              })
-            });
+        }).then((value) =>
+            {Navigator.of(context).pushNamed(AppRoutes.user_register_cities)});
       } catch (error) {
         customWidget.showSnack(context, error.toString());
       }
@@ -63,9 +59,8 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
                 email: professionalUser.email,
                 password: _passwordController.text)
             .then((value) => {
-                  customWidget.showSnack(context,
-                      "Conta criada com Sucesso! Verifique o seu email para obter acesso."),
-                  Future.delayed(const Duration(seconds: 2), () {
+                  customWidget.showSnack(context, "Conta criada com Sucesso!"),
+                  Future.delayed(const Duration(seconds: 3), () {
                     _registerUser(professionalUser);
                   })
                 });
@@ -80,28 +75,34 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
         children: <Widget>[
           Padding(
               padding: EdgeInsets.only(bottom: height / 30),
-              child: customWidget.createTextFieldWithLabel(
-                  _firstNameController, "Primeiro Nome", Colors.white)),
+              child: customWidget.createTextFieldWithLabel(_firstNameController,
+                  "Primeiro Nome", "Insira o seu primeiro nome", Colors.white)),
+          Padding(
+              padding: EdgeInsets.only(bottom: height / 30),
+              child: customWidget.createTextFieldWithLabel(_lastNameController,
+                  "Último Nome", "Insira o seu último nome", Colors.white)),
           Padding(
               padding: EdgeInsets.only(bottom: height / 30),
               child: customWidget.createTextFieldWithLabel(
-                  _lastNameController, "Último Nome", Colors.white)),
+                  _phoneNumberController,
+                  "Número de Celular",
+                  "Minímo 10 digitos",
+                  Colors.white)),
           Padding(
               padding: EdgeInsets.only(bottom: height / 30),
-              child: customWidget.createTextFieldWithLabel(
-                  _phoneNumberController, "Número de Celular", Colors.white)),
-          Padding(
-              padding: EdgeInsets.only(bottom: height / 30),
-              child: customWidget.createTextFieldWithLabel(
-                  _emailController, "E-mail", Colors.white)),
+              child: customWidget.createTextFieldWithLabel(_emailController,
+                  "E-mail", "Insira um email válido", Colors.white)),
           Padding(
               padding: EdgeInsets.only(bottom: height / 30),
               child: customWidget.createPasswordFieldWithLabel(
-                  _passwordController, "Senha", Colors.white)),
+                  _passwordController,
+                  "Senha",
+                  "Minímo 6 caracteres",
+                  Colors.white)),
           Padding(
               padding: EdgeInsets.only(bottom: height / 30),
               child: customWidget.createPasswordFieldWithLabel(
-                  _repasswordController, "Senha novamente", Colors.white))
+                  _repasswordController, "Senha novamente", "", Colors.white))
         ],
       ),
     );

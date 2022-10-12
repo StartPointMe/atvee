@@ -16,6 +16,7 @@ class CustomWidget {
 
   Widget _createField(
     TextEditingController fieldController,
+    String hint,
     bool isPassword,
   ) {
     return Material(
@@ -31,7 +32,8 @@ class CustomWidget {
               style: GoogleFonts.anton(
                   fontSize: _mediaQuery.size.width / 24, color: Colors.black),
               cursorColor: Colors.black,
-              decoration: const InputDecoration(border: InputBorder.none),
+              decoration:
+                  InputDecoration(border: InputBorder.none, hintText: hint),
             ),
           ),
         ));
@@ -58,7 +60,7 @@ class CustomWidget {
   }
 
   Widget createTextFieldWithLabel(TextEditingController fieldController,
-      String fieldLabel, Color labelColor) {
+      String fieldLabel, String hint, Color labelColor) {
     return Column(
       children: <Widget>[
         Padding(
@@ -66,13 +68,13 @@ class CustomWidget {
                 left: _mediaQuery.size.width / 15,
                 bottom: _mediaQuery.size.height / 120),
             child: _createLabel(fieldLabel, labelColor)),
-        _createField(fieldController, false)
+        _createField(fieldController, hint, false)
       ],
     );
   }
 
   Widget createPasswordFieldWithLabel(TextEditingController fieldController,
-      String fieldLabel, Color labelColor) {
+      String fieldLabel, String hint, Color labelColor) {
     return Column(
       children: <Widget>[
         Padding(
@@ -80,7 +82,7 @@ class CustomWidget {
                 left: _mediaQuery.size.width / 15,
                 bottom: _mediaQuery.size.height / 120),
             child: _createLabel(fieldLabel, labelColor)),
-        _createField(fieldController, true)
+        _createField(fieldController, hint, true)
       ],
     );
   }
