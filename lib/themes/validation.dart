@@ -13,4 +13,18 @@ class Validation {
     bool isValid = EmailValidator.validate(userEmail);
     return isValid;
   }
+
+  bool validTextLength(String text, int min, int max) {
+    if (text.length < min || text.length > max) {
+      return false;
+    }
+    return true;
+  }
+
+  bool hasNoSpace(String text) {
+    if (text.trim() == "") {
+      return false;
+    }
+    return true;
+  }
 }

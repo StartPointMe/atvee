@@ -7,9 +7,22 @@ class ProfessionalUser {
   final String phoneNumber;
   final String profilePicUrl;
   final bool isClient;
+  final String occupation;
+  final String description;
+  final String areaOfOperation;
+  final List<String> activities;
 
-  const ProfessionalUser(this.firstName, this.lastName, this.email,
-      this.phoneNumber, this.profilePicUrl, this.isClient);
+  const ProfessionalUser(
+      this.firstName,
+      this.lastName,
+      this.email,
+      this.phoneNumber,
+      this.profilePicUrl,
+      this.isClient,
+      this.occupation,
+      this.description,
+      this.areaOfOperation,
+      this.activities);
 
   factory ProfessionalUser.fromDocument(QueryDocumentSnapshot document) {
     return ProfessionalUser(
@@ -18,6 +31,10 @@ class ProfessionalUser {
         document['email'],
         document['phoneNumber'],
         document['profilePicUrl'],
-        document['isCLient']);
+        document['isCLient'],
+        document['occupation'],
+        document['description'],
+        document['areaOfOperation'],
+        document['activities']);
   }
 }
