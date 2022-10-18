@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class CustomWidget {
   // ignore: prefer_typing_uninitialized_variables, unused_field
@@ -10,7 +9,8 @@ class CustomWidget {
   Widget _createLabel(String fieldLabel, Color labelColor) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Text(fieldLabel, style: TextStyle(color: labelColor)),
+      child: Text(fieldLabel,
+          style: TextStyle(color: labelColor, fontWeight: FontWeight.bold)),
     );
   }
 
@@ -23,17 +23,21 @@ class CustomWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         child: Padding(
-          padding: const EdgeInsets.only(left: 20),
+          padding: const EdgeInsets.only(left: 20, right: 20),
           child: SizedBox(
-            width: _mediaQuery.size.width / 1.4,
+            width: _mediaQuery.size.width / 1.5,
             child: TextFormField(
               obscureText: isPassword,
               controller: fieldController,
-              style: GoogleFonts.anton(
+              style: TextStyle(
                   fontSize: _mediaQuery.size.width / 24, color: Colors.black),
               cursorColor: Colors.black,
-              decoration:
-                  InputDecoration(border: InputBorder.none, hintText: hint),
+              decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: hint,
+                  hintStyle: TextStyle(
+                      fontSize: _mediaQuery.size.width / 24,
+                      color: Colors.black)),
             ),
           ),
         ));
@@ -85,5 +89,42 @@ class CustomWidget {
         _createField(fieldController, hint, true)
       ],
     );
+  }
+
+  Widget buildUserAvatar(var imageURL, width, height) {
+    //   if (imageURL == null || imageURL == "") {
+    //     return Material(
+    //         color: Colors.transparent,
+    //         child: ClipOval(
+    //           child: Image.asset(
+    //             "lib/resources/icon-atvee.jpeg",
+    //             width: width,
+    //             height: height,
+    //             fit: BoxFit.cover,
+    //           ),
+    //         ));
+    //   } else {
+    //     return Material(
+    //         color: Colors.transparent,
+    //         child: ClipOval(
+    //           child: Image.network(
+    //             imageURL,
+    //             width: width,
+    //             height: height,
+    //             fit: BoxFit.cover,
+    //           ),
+    //         ));
+    //   }
+    // }
+    return Material(
+        color: Colors.transparent,
+        child: ClipOval(
+          child: Image.file(
+            imageURL,
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+          ),
+        ));
   }
 }
