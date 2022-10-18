@@ -129,6 +129,9 @@ class _LoginScreenViewState extends State<LoginScreen> {
         ));
 
     return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: height / 18,
+      ),
       backgroundColor: Colors.white,
       body: DoubleBackToCloseApp(
         snackBar: const SnackBar(content: Text("Toque de novo para sair")),
@@ -143,7 +146,7 @@ class _LoginScreenViewState extends State<LoginScreen> {
                     children: [
                       Padding(
                         padding: EdgeInsets.only(
-                            bottom: height / 20, top: height / 20),
+                            bottom: height / 20, top: height / 35),
                         child: appIcon,
                       ),
                       Padding(
