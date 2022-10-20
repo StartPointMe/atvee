@@ -66,7 +66,7 @@ class _RedefinePasswordScreenViewState extends State<RedefinePasswordScreen> {
             padding: EdgeInsets.fromLTRB(
                 width / 10, height / 100, width / 10, height / 100),
             child: Text(
-              "redefinir senha".toUpperCase(),
+              "enviar".toUpperCase(),
               style: GoogleFonts.anton(fontSize: 30, color: Colors.white),
             )));
 
