@@ -76,7 +76,6 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
 
       setState(() {
         _userImage = File(pickedFile!.path);
-        customWidget.showSnack(context, pickedFile.path);
         uploadImageToFirebase();
       });
     } on PlatformException catch (e) {
@@ -212,6 +211,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
           .createUserWithEmailAndPassword(
               email: professionalUser.email, password: _passwordController.text)
           .then((value) => {
+                value.user!.sendEmailVerification(),
                 customWidget.showSnack(context,
                     "Criando conta e redirecionando para a tela de login."),
                 Future.delayed(const Duration(seconds: 5), () {
