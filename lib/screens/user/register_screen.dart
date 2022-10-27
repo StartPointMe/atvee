@@ -33,11 +33,11 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _repasswordController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  late String picUrl;
 
   int _activeStepIndex = 0;
   ProfessionalUser? _professionalUser;
   Validation validation = Validation();
-  UploadTask? uploadTask;
   CitySelector citySelector = const CitySelector();
   Occupation? occupation;
 
@@ -57,6 +57,8 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
     "Mairinque",
     "Alumínio"
   ];
+
+  bool? isSelfEmployed;
 
   String? selectedValue;
 
@@ -134,6 +136,11 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
         }
       }
     } else {
+      if (isSelfEmployed == null) {
+        customWidget.showSnack(context,
+            "Selecione uma das opções para o campo Profissional Autônomo.");
+        return false;
+      }
       if (selectedValue == null) {
         customWidget.showSnack(context, "Selecione uma cidade.");
         return false;
@@ -167,8 +174,9 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
         _lastNameController.text,
         _emailController.text,
         _phoneNumberController.text,
-        basename(_userImage!.path),
+        picUrl,
         false,
+        isSelfEmployed!,
         occupation!.name.toString(),
         _descriptionController.text,
         selectedValue.toString(),
@@ -193,6 +201,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
         'phone_number': professionalUser.phoneNumber,
         'profile_picture_url': professionalUser.profilePicUrl,
         'is_client': professionalUser.isClient,
+        'is_self_employed': professionalUser.isSelfEmployed,
         'occupation': professionalUser.occupation,
         'description': professionalUser.description,
         'area_of_operation': professionalUser.areaOfOperation,
@@ -228,7 +237,9 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
 
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference firebaseStorageRef = storage.ref().child('user-images/$fileName');
-    uploadTask = firebaseStorageRef.putFile(_userImage!);
+    UploadTask uploadTask = firebaseStorageRef.putFile(_userImage!);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    taskSnapshot.ref.getDownloadURL().then((value) => picUrl = value);
   }
 
   @override
@@ -277,6 +288,52 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
             occupation = value;
           });
         },
+      ),
+    );
+
+    final radios = SizedBox(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(left: width / 20),
+            child: const Text('Profissional Autônomo?',
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: width / 30),
+            child: ListTile(
+              title: const Text('Sim', style: TextStyle(color: Colors.white)),
+              leading: Radio(
+                fillColor: MaterialStateProperty.all(Colors.white),
+                value: true,
+                groupValue: isSelfEmployed,
+                onChanged: (value) {
+                  setState(() {
+                    isSelfEmployed = value;
+                  });
+                },
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: width / 30),
+            child: ListTile(
+              title: const Text('Não', style: TextStyle(color: Colors.white)),
+              leading: Radio(
+                fillColor: MaterialStateProperty.all(Colors.white),
+                value: false,
+                groupValue: isSelfEmployed,
+                onChanged: (value) {
+                  setState(() {
+                    isSelfEmployed = value;
+                  });
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
 
@@ -391,6 +448,10 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
       width: width / 1.2,
       child: Column(
         children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(bottom: height / 30),
+            child: radios,
+          ),
           Padding(
             padding: EdgeInsets.only(bottom: height / 30),
             child: cityDropDown,
