@@ -130,7 +130,9 @@ class _LoginScreenViewState extends State<LoginScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: height / 18,
+        title: const Text("Login"),
+        centerTitle: true,
+        backgroundColor: Colors.lightGreen,
       ),
       backgroundColor: Colors.white,
       body: DoubleBackToCloseApp(

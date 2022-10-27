@@ -7,6 +7,7 @@ class ProfessionalUser {
   final String phoneNumber;
   final String profilePicUrl;
   final bool isClient;
+  final bool isSelfEmployed;
   final String occupation;
   final String description;
   final String areaOfOperation;
@@ -19,6 +20,7 @@ class ProfessionalUser {
       this.phoneNumber,
       this.profilePicUrl,
       this.isClient,
+      this.isSelfEmployed,
       this.occupation,
       this.description,
       this.areaOfOperation,
@@ -32,6 +34,7 @@ class ProfessionalUser {
         document['phoneNumber'],
         document['profilePicUrl'],
         document['isCLient'],
+        document['isSelfEmployed'],
         document['occupation'],
         document['description'],
         document['areaOfOperation'],
