@@ -127,4 +127,17 @@ class CustomWidget {
           ),
         ));
   }
+
+  Widget userNetworkAvatar(var imageURL, width, height) {
+    return Material(
+        color: Colors.transparent,
+        child: ClipOval(
+          child: Image.network(
+            imageURL,
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+          ),
+        ));
+  }
 }
