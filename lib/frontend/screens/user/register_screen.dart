@@ -1,13 +1,13 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers, depend_on_referenced_packages
 import 'dart:io';
 
-import 'package:atvee/bloc/models/professional_user.dart';
-import 'package:atvee/themes/models/activity.dart';
-import 'package:atvee/themes/models/occupation.dart';
-import 'package:atvee/themes/widgets/activity_checkbox.dart';
-import 'package:atvee/themes/widgets/city_selector.dart';
-import 'package:atvee/themes/custom_widget.dart';
-import 'package:atvee/themes/validation.dart';
+import 'package:atvee/backend/models/professional_user.dart';
+import 'package:atvee/backend/models/activity.dart';
+import 'package:atvee/backend/models/occupation.dart';
+import 'package:atvee/frontend/themes/widgets/activity_checkbox.dart';
+import 'package:atvee/frontend/themes/widgets/city_selector.dart';
+import 'package:atvee/frontend/themes/custom_widget.dart';
+import 'package:atvee/frontend/themes/validation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';

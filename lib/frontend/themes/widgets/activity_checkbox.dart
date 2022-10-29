@@ -1,4 +1,4 @@
-import 'package:atvee/themes/models/activity.dart';
+import 'package:atvee/backend/models/activity.dart';
 import 'package:flutter/material.dart';
 
 class ActivityCheckboxWidget extends StatefulWidget {
