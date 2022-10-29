@@ -1,9 +1,9 @@
 // ignore_for_file: constant_identifier_names
-import 'package:atvee/screens/home/home_screen.dart';
-import 'package:atvee/screens/user/redefine_password_screen.dart';
-import 'package:atvee/screens/user/register_screen.dart';
+import 'package:atvee/frontend/screens/home/home_screen.dart';
+import 'package:atvee/frontend/screens/user/redefine_password_screen.dart';
+import 'package:atvee/frontend/screens/user/register_screen.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:atvee/screens/opening/opening_screen.dart';
+import 'package:atvee/frontend/screens/opening/opening_screen.dart';
 
 import '../screens/user/login_screen.dart';
 

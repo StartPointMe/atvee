@@ -1,6 +1,6 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers, use_build_context_synchronously
 
-import 'package:atvee/themes/custom_widget.dart';
+import 'package:atvee/frontend/themes/custom_widget.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
@@ -36,7 +36,8 @@ class _LoginScreenViewState extends State<LoginScreen> {
             .user;
 
         if (user!.emailVerified) {
-          Navigator.of(context).pushNamed(AppRoutes.home);
+          // Navigator.of(context).pushNamed(AppRoutes.home);
+          customWidget.showSnack(context, "Email verificado");
         } else {
           customWidget.showSnack(context,
               "Por favor, verifique o seu e-mail antes de efetuar o login");

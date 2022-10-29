@@ -1,6 +1,6 @@
-import 'package:atvee/themes/custom_widget.dart';
-import 'package:atvee/themes/routes.dart';
-import 'package:atvee/themes/validation.dart';
+import 'package:atvee/frontend/themes/custom_widget.dart';
+import 'package:atvee/frontend/themes/routes.dart';
+import 'package:atvee/frontend/themes/validation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
