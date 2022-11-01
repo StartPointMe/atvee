@@ -1,25 +1,27 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers, use_build_context_synchronously
-
-import 'package:atvee/frontend/themes/custom_widget.dart';
+import 'package:atvee/backend/service/professional_service.dart';
+import 'package:atvee/frontend/themes/utils.dart';
+import 'package:atvee/frontend/themes/widgets/fields/email_field.dart';
+import 'package:atvee/frontend/themes/widgets/fields/password_field.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../themes/routes.dart';
 
-// ignore: use_key_in_widget_constructors
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
-  // ignore: library_private_types_in_public_api
-  _LoginScreenViewState createState() => _LoginScreenViewState();
+  State<StatefulWidget> createState() => _LoginScreenViewState();
 }
 
 class _LoginScreenViewState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  late Utils utils;
+  ProfessionalService professionalService = ProfessionalService();
 
   @override
   Widget build(BuildContext context) {
@@ -27,60 +29,47 @@ class _LoginScreenViewState extends State<LoginScreen> {
     var height = mediaQuery.size.height;
     var width = mediaQuery.size.width;
 
-    CustomWidget customWidget = CustomWidget(mediaQuery);
+    utils = Utils(context: context);
 
-    Future _signIn(String email, String password) async {
-      try {
-        User? user = (await FirebaseAuth.instance
-                .signInWithEmailAndPassword(email: email, password: password))
-            .user;
-
-        if (user!.emailVerified) {
-          // Navigator.of(context).pushNamed(AppRoutes.home);
-          customWidget.showSnack(context, "Email verificado");
-        } else {
-          customWidget.showSnack(context,
-              "Por favor, verifique o seu e-mail antes de efetuar o login");
-        }
-      } on FirebaseAuthException catch (error) {
-        customWidget.showSnack(context, error.message.toString());
-      }
-    }
-
-    final appIcon = customWidget.createImage(
-        context, "lib/resources/icon-atvee.jpeg", 4, 1.5);
-    final emailField = customWidget.createTextFieldWithLabel(_emailController,
-        "E-mail", "Insira o seu email de cadastro", Colors.white);
-    final passwordField = customWidget.createPasswordFieldWithLabel(
-        _passwordController, "Senha", "Insira a sua senha", Colors.white);
+    final appIcon = ClipRect(
+        child: Image.asset(
+      "lib/resources/icon-atvee.jpeg",
+      width: width / 2,
+      height: height / 4,
+      fit: BoxFit.cover,
+    ));
+    final emailField = EmailField(controller: emailController);
+    final passwordField = PasswordField(controller: passwordController);
 
     final registerAnchor = MaterialButton(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        onPressed: () {
-          Navigator.of(context).pushNamed(AppRoutes.user_register);
-        },
-        child: Text(
-          "Cadastre-se",
-          style: GoogleFonts.roboto(
-              fontSize: width / 24,
-              color: Colors.white,
-              fontWeight: FontWeight.bold),
-        ));
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      onPressed: () {
+        Navigator.of(context).pushNamed(AppRoutes.user_register);
+      },
+      child: Text(
+        "Cadastre-se",
+        style: GoogleFonts.roboto(
+            fontSize: width / 24,
+            color: Colors.white,
+            fontWeight: FontWeight.bold),
+      ),
+    );
 
     final forgetPasswordAnchor = MaterialButton(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        onPressed: () {
-          Navigator.of(context).pushNamed(AppRoutes.user_redefine_password);
-        },
-        child: Text(
-          "Esqueceu a senha?",
-          style: GoogleFonts.roboto(
-              fontSize: width / 24,
-              color: Colors.white,
-              fontWeight: FontWeight.bold),
-        ));
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      onPressed: () {
+        Navigator.of(context).pushNamed(AppRoutes.user_redefine_password);
+      },
+      child: Text(
+        "Esqueceu a senha?",
+        style: GoogleFonts.roboto(
+            fontSize: width / 24,
+            color: Colors.white,
+            fontWeight: FontWeight.bold),
+      ),
+    );
 
     final registerFields = Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -93,41 +82,40 @@ class _LoginScreenViewState extends State<LoginScreen> {
     );
 
     final logInButton = ElevatedButton(
-        style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(
-                const Color.fromARGB(255, 59, 82, 67)),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ))),
-        onPressed: () async {
-          _signIn(_emailController.text, _passwordController.text);
-        },
-        child: Padding(
-            padding: EdgeInsets.fromLTRB(
-                width / 3.8, height / 100, width / 3.8, height / 100),
-            child: Text(
-              "entrar".toUpperCase(),
-              style: GoogleFonts.anton(fontSize: 30, color: Colors.white),
-            )));
+      onPressed: () async {
+        if (formKey.currentState!.validate()) {
+          if (await handleLogin()) {
+            utils.alert("Aguarde...");
+            Future.delayed(const Duration(seconds: 5), () {
+              Navigator.of(context).pushNamed(AppRoutes.home);
+            });
+          }
+        }
+      },
+      child: Text(
+        "ENTRAR",
+        style: GoogleFonts.anton(fontSize: 30, color: Colors.white),
+      ),
+    );
 
     final fields = Container(
-        width: width / 1.2,
-        decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 59, 82, 67),
-            borderRadius: BorderRadius.circular(10)),
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(bottom: height / 40),
-              child: registerFields,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [registerAnchor, forgetPasswordAnchor],
-            ),
-          ],
-        ));
+      width: width / 1.2,
+      decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 59, 82, 67),
+          borderRadius: BorderRadius.circular(10)),
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(bottom: height / 40),
+            child: registerFields,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [registerAnchor, forgetPasswordAnchor],
+          ),
+        ],
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -139,7 +127,7 @@ class _LoginScreenViewState extends State<LoginScreen> {
       body: DoubleBackToCloseApp(
         snackBar: const SnackBar(content: Text("Toque de novo para sair")),
         child: Form(
-            key: _formKey,
+            key: formKey,
             child: SingleChildScrollView(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -164,5 +152,22 @@ class _LoginScreenViewState extends State<LoginScreen> {
             )),
       ),
     );
+  }
+
+  Future<bool> handleLogin() async {
+    try {
+      String verified = await professionalService.signIn(
+          emailController.text, passwordController.text);
+
+      if (verified == "ok") {
+        return true;
+      } else {
+        utils.alert("Verifique a sua conta antes de efetuar o login");
+        return false;
+      }
+    } catch (error) {
+      utils.alert("Por favor, verifique se os dados inseridos estão corretos");
+      return false;
+    }
   }
 }
