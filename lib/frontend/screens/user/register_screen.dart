@@ -1,19 +1,23 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers, depend_on_referenced_packages
 import 'dart:io';
 
+import 'package:atvee/backend/service/professional_service.dart';
 import 'package:atvee/backend/models/professional_user.dart';
 import 'package:atvee/backend/models/activity.dart';
-import 'package:atvee/backend/models/occupation.dart';
+import 'package:atvee/frontend/themes/routes.dart';
 import 'package:atvee/frontend/themes/widgets/activity_checkbox.dart';
-import 'package:atvee/frontend/themes/widgets/city_selector.dart';
-import 'package:atvee/frontend/themes/custom_widget.dart';
-import 'package:atvee/frontend/themes/validation.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:atvee/frontend/themes/utils.dart';
+import 'package:atvee/frontend/themes/widgets/fields/cellphone_field.dart';
+import 'package:atvee/frontend/themes/widgets/fields/city_field.dart';
+import 'package:atvee/frontend/themes/widgets/fields/description_field.dart';
+import 'package:atvee/frontend/themes/widgets/fields/email_field.dart';
+import 'package:atvee/frontend/themes/widgets/fields/first_name_field.dart';
+import 'package:atvee/frontend/themes/widgets/fields/last_name_field.dart';
+import 'package:atvee/frontend/themes/widgets/fields/occupation_field.dart';
+import 'package:atvee/frontend/themes/widgets/fields/password_field.dart';
+import 'package:atvee/frontend/themes/widgets/fields/repassword_field.dart';
+import 'package:atvee/frontend/themes/widgets/fields/self_employed_field.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 
@@ -21,48 +25,31 @@ class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _RegisterScreenViewState createState() => _RegisterScreenViewState();
+  State<StatefulWidget> createState() => _RegisterScreenViewState();
 }
 
 class _RegisterScreenViewState extends State<RegisterScreen> {
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _phoneNumberController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _repasswordController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  late String picUrl;
+  // Variáveis da primeira etapa do cadastro
+  final firstStepFormKey = GlobalKey<FormState>();
+  final TextEditingController pictureController = TextEditingController();
+  final TextEditingController occupationController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  File? userImage;
+  String? url;
 
-  int _activeStepIndex = 0;
-  ProfessionalUser? _professionalUser;
-  Validation validation = Validation();
-  CitySelector citySelector = const CitySelector();
-  Occupation? occupation;
+  // Variáveis da segunda etapa do cadastro
+  final secondStepFormKey = GlobalKey<FormState>();
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController cellphoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController repasswordController = TextEditingController();
 
-  File? _userImage;
-  final picker = ImagePicker();
-
-  dynamic imgURL;
-
-  final List<String> cities = [
-    "Sorocaba",
-    "Votorantim",
-    "Salto de Pirapora",
-    "Araçoiaba da Serra",
-    "Iperó",
-    "Porto Feliz",
-    "Itu",
-    "Mairinque",
-    "Alumínio"
-  ];
-
-  bool? isSelfEmployed;
-
-  String? selectedValue;
-
-  List<Activity> activities = <Activity>[
+  // Variáveis da terceira etapa do cadastro
+  final TextEditingController selfEmployedController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
+  List<Activity> activities = [
     Activity(value: 'Musculação'),
     Activity(value: 'Yoga'),
     Activity(value: 'Corrida'),
@@ -70,305 +57,55 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
     Activity(value: 'Crossfit'),
   ];
 
-  List<String> selection = [];
+  // Variáveis para as validações dos campos da terceira etapa
+  late bool isSelfEmployed;
+  List<String> selected = [];
 
-  Future pickImage(BuildContext context, CustomWidget customWidget) async {
-    try {
-      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  // Usuário que será criado ao final do cadastro
+  late ProfessionalUser professionalUser;
 
-      setState(() {
-        _userImage = File(pickedFile!.path);
-        uploadImageToFirebase();
-      });
-    } on PlatformException catch (e) {
-      customWidget.showSnack(context, e.message.toString());
-    }
-  }
+  // Variável para o controle do Stepper
+  int activeStepIndex = 0;
 
-  bool validFields(BuildContext context, CustomWidget customWidget, int step) {
-    if (step == 0) {
-      if (_userImage == null) {
-        customWidget.showSnack(context, "Selecione uma foto.");
-        return false;
-      }
-      if (occupation == null) {
-        customWidget.showSnack(context, "Selecione uma profissão.");
-        return false;
-      }
-      if (!validation.validTextLength(_descriptionController.text, 10, 250) ||
-          _descriptionController.text.isEmpty) {
-        customWidget.showSnack(
-            context, "Minímo 10 caracteres, máximo 250 no campo Descrição.");
-        return false;
-      }
-    } else if (step == 1) {
-      if (!validation.validTextLength(_firstNameController.text, 2, 20) ||
-          !validation.hasNoSpace(_firstNameController.text) ||
-          _firstNameController.text.isEmpty) {
-        customWidget.showSnack(context,
-            "Minímo 2 caracteres, máximo 20 no campo Nome e sem espaço.");
-        return false;
-      }
-      if (!validation.validTextLength(_lastNameController.text, 2, 20) ||
-          !validation.hasNoSpace(_lastNameController.text) ||
-          _lastNameController.text.isEmpty) {
-        customWidget.showSnack(context,
-            "Minímo 2 caracteres, máximo 20 no campo Sobrenome e sem espaço.");
-        return false;
-      }
-      if (!validation.validPhoneNumber(_phoneNumberController.text)) {
-        customWidget.showSnack(context,
-            "Minímo 10, máximo 12 caracteres no campo Contato e número válido.");
-        return false;
-      }
-      if (!validation.validEmail(_emailController.text)) {
-        customWidget.showSnack(context, "Email inválido.");
-        return false;
-      }
-      if (_passwordController.text.length < 6) {
-        customWidget.showSnack(context,
-            "Minímo 6 caracteres, máximo 20 no campo Senha e sem espaço.");
-        return false;
-      } else if (_passwordController.text.length >= 6) {
-        if (_passwordController.text != _repasswordController.text) {
-          customWidget.showSnack(context, "Senhas diferentes.");
-          return false;
-        }
-      }
-    } else {
-      if (isSelfEmployed == null) {
-        customWidget.showSnack(context,
-            "Selecione uma das opções para o campo Profissional Autônomo.");
-        return false;
-      }
-      if (selectedValue == null) {
-        customWidget.showSnack(context, "Selecione uma cidade.");
-        return false;
-      }
-    }
+  // Variáveis auxiliares
+  late Utils utils;
+  late double width;
+  late double height;
 
-    return true;
-  }
-
-  bool saveActivities(BuildContext context, CustomWidget customWidget,
-      List<Activity> activities) {
-    selection = [];
-
-    for (var activity in activities) {
-      if (activity.isChecked == true) {
-        selection.add(activity.value);
-      }
-    }
-
-    if (selection.length > 3 || selection.isEmpty) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  void _handleRegister(CustomWidget customWidget, BuildContext context) {
-    if (saveActivities(context, customWidget, activities) == true) {
-      _professionalUser = ProfessionalUser(
-        _firstNameController.text,
-        _lastNameController.text,
-        _emailController.text,
-        _phoneNumberController.text,
-        picUrl,
-        false,
-        isSelfEmployed!,
-        occupation!.name.toString(),
-        _descriptionController.text,
-        selectedValue.toString(),
-        selection,
-      );
-
-      _registerUser(context, _professionalUser!, customWidget);
-    } else {
-      customWidget.showSnack(
-          context, "Selecione no minímo uma atividade, no máximo três.");
-    }
-  }
-
-  void _registerUser(BuildContext context, ProfessionalUser professionalUser,
-      CustomWidget customWidget) async {
-    try {
-      CollectionReference userdata =
-          FirebaseFirestore.instance.collection('professionals');
-      await userdata.doc(professionalUser.email).set({
-        'first_name': professionalUser.firstName,
-        'last_name': professionalUser.lastName,
-        'phone_number': professionalUser.phoneNumber,
-        'profile_picture_url': professionalUser.profilePicUrl,
-        'is_client': professionalUser.isClient,
-        'is_self_employed': professionalUser.isSelfEmployed,
-        'occupation': professionalUser.occupation,
-        'description': professionalUser.description,
-        'area_of_operation': professionalUser.areaOfOperation,
-        'activities': professionalUser.activities
-      }).then((value) =>
-          {_createCredential(context, professionalUser, customWidget)});
-    } catch (error) {
-      customWidget.showSnack(context, error.toString());
-    }
-  }
-
-  void _createCredential(BuildContext context,
-      ProfessionalUser professionalUser, CustomWidget customWidget) async {
-    try {
-      await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: professionalUser.email, password: _passwordController.text)
-          .then((value) => {
-                value.user!.sendEmailVerification(),
-                customWidget.showSnack(context,
-                    "Criando conta e redirecionando para a tela de login."),
-                Future.delayed(const Duration(seconds: 5), () {
-                  Navigator.of(context).pop();
-                })
-              });
-    } on FirebaseAuthException catch (error) {
-      customWidget.showSnack(context, error.message.toString());
-    }
-  }
-
-  Future uploadImageToFirebase() async {
-    String fileName = basename(_userImage!.path);
-
-    FirebaseStorage storage = FirebaseStorage.instance;
-    Reference firebaseStorageRef = storage.ref().child('user-images/$fileName');
-    UploadTask uploadTask = firebaseStorageRef.putFile(_userImage!);
-    TaskSnapshot taskSnapshot = await uploadTask;
-    taskSnapshot.ref.getDownloadURL().then((value) => picUrl = value);
-  }
+  ProfessionalService professionalService = ProfessionalService();
 
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    final height = mediaQuery.size.height;
-    final width = mediaQuery.size.width;
+    height = mediaQuery.size.height;
+    width = mediaQuery.size.width;
+    utils = Utils(context: context);
 
-    CustomWidget _customWidget = CustomWidget(mediaQuery);
-
-    final openGallery = IconButton(
-      icon: const Icon(Icons.photo_camera, size: 40, color: Colors.white),
-      onPressed: () {
-        pickImage(context, _customWidget);
-      },
+    // Campos da primeira etapa de cadastro
+    final pictureField = Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        userImage == null ? defaultPicture() : pickedPicture(),
+        createIcon(),
+      ],
     );
+    final occupationField = OccupationField(controller: occupationController);
+    final descriptionField =
+        DescriptionField(controller: descriptionController);
 
-    final occupationDropDown = DropdownButtonHideUnderline(
-      child: DropdownButton2(
-        buttonWidth: width / 1.3,
-        buttonDecoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(10)),
-        hint: Padding(
-          padding: EdgeInsets.only(left: width / 20),
-          child: const Text(
-            'Selecione uma profisssão',
-            style: TextStyle(fontSize: 14, color: Colors.black),
-          ),
-        ),
-        items: Occupation.values
-            .map((occupation) => DropdownMenuItem<Occupation>(
-                value: occupation,
-                child: Padding(
-                  padding: EdgeInsets.only(left: width / 20),
-                  child: Text(
-                    occupation.name.toUpperCase() == 'PERSONAL'
-                        ? 'PERSONAL TRAINER'
-                        : occupation.name.toUpperCase(),
-                    style: const TextStyle(fontSize: 14, color: Colors.black),
-                  ),
-                )))
-            .toList(),
-        value: occupation,
-        onChanged: (value) {
-          setState(() {
-            occupation = value;
-          });
-        },
-      ),
-    );
+    // Campos da segunda etapa de cadastro
+    final firstNameField = FirstNameField(controller: firstNameController);
+    final lastNameField = LastNameField(controller: lastNameController);
+    final cellphoneField = CellphoneField(controller: cellphoneController);
+    final emailField = EmailField(controller: emailController);
+    final passwordField = PasswordField(controller: passwordController);
+    final repasswordField = RepasswordField(controller: repasswordController);
 
-    final radios = SizedBox(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(left: width / 20),
-            child: const Text('Profissional Autônomo?',
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold)),
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: width / 30),
-            child: ListTile(
-              title: const Text('Sim', style: TextStyle(color: Colors.white)),
-              leading: Radio(
-                fillColor: MaterialStateProperty.all(Colors.white),
-                value: true,
-                groupValue: isSelfEmployed,
-                onChanged: (value) {
-                  setState(() {
-                    isSelfEmployed = value;
-                  });
-                },
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: width / 30),
-            child: ListTile(
-              title: const Text('Não', style: TextStyle(color: Colors.white)),
-              leading: Radio(
-                fillColor: MaterialStateProperty.all(Colors.white),
-                value: false,
-                groupValue: isSelfEmployed,
-                onChanged: (value) {
-                  setState(() {
-                    isSelfEmployed = value;
-                  });
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-
-    final cityDropDown = DropdownButtonHideUnderline(
-      child: DropdownButton2(
-        buttonWidth: width / 1.3,
-        buttonDecoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(10)),
-        hint: Padding(
-          padding: EdgeInsets.only(left: width / 20),
-          child: const Text(
-            'Selecione uma cidade',
-            style: TextStyle(fontSize: 14, color: Colors.black),
-          ),
-        ),
-        items: cities
-            .map((city) => DropdownMenuItem<String>(
-                value: city,
-                child: Padding(
-                    padding: EdgeInsets.only(left: width / 20),
-                    child: Text(
-                      city,
-                      style: const TextStyle(fontSize: 14, color: Colors.black),
-                    ))))
-            .toList(),
-        value: selectedValue,
-        onChanged: (value) {
-          setState(() {
-            selectedValue = value as String;
-          });
-        },
-      ),
-    );
-
-    final activityList = Column(
+    // Campos da terceira etapa de cadastro
+    final selfEmployedField =
+        SelfEmployedField(controller: selfEmployedController);
+    final cityField = CityField(controller: cityController);
+    final activitiesField = Column(
       children: [
         ActivityCheckboxWidget(item: activities[0]),
         ActivityCheckboxWidget(item: activities[1]),
@@ -380,67 +117,37 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
 
     final firstStepFields = SizedBox(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          if (_userImage != null)
-            Padding(
-                padding: EdgeInsets.only(bottom: height / 60),
-                child: _customWidget.buildUserAvatar(_userImage,
-                    mediaQuery.size.width / 2.5, mediaQuery.size.height / 5)),
-          Padding(
-              padding: EdgeInsets.only(bottom: height / 30),
-              child: openGallery),
-          Padding(
-              padding: EdgeInsets.only(bottom: height / 30),
-              child: occupationDropDown),
-          Padding(
-              padding: EdgeInsets.only(bottom: height / 30),
-              child: _customWidget.createTextFieldWithLabel(
-                  _descriptionController,
-                  "Descrição",
-                  "Insira uma descrição",
-                  Colors.white)),
-        ],
+          pictureField,
+          occupationField,
+          Form(
+            key: firstStepFormKey,
+            child: descriptionField,
+          ),
+        ]
+            .map((widget) => Padding(
+                  padding: EdgeInsets.only(bottom: height / 40),
+                  child: widget,
+                ))
+            .toList(),
       ),
     );
 
     final secondStepFields = SizedBox(
       child: Column(
         children: <Widget>[
-          Padding(
-              padding: EdgeInsets.only(bottom: height / 30),
-              child: _customWidget.createTextFieldWithLabel(
-                  _firstNameController,
-                  "Primeiro Nome",
-                  "Insira o seu primeiro nome",
-                  Colors.white)),
-          Padding(
-              padding: EdgeInsets.only(bottom: height / 30),
-              child: _customWidget.createTextFieldWithLabel(_lastNameController,
-                  "Último Nome", "Insira o seu último nome", Colors.white)),
-          Padding(
-              padding: EdgeInsets.only(bottom: height / 30),
-              child: _customWidget.createTextFieldWithLabel(
-                  _phoneNumberController,
-                  "Número de Celular",
-                  "Minímo 10 digitos",
-                  Colors.white)),
-          Padding(
-              padding: EdgeInsets.only(bottom: height / 30),
-              child: _customWidget.createTextFieldWithLabel(_emailController,
-                  "E-mail", "Insira um email válido", Colors.white)),
-          Padding(
-              padding: EdgeInsets.only(bottom: height / 30),
-              child: _customWidget.createPasswordFieldWithLabel(
-                  _passwordController,
-                  "Senha",
-                  "Minímo 6 caracteres",
-                  Colors.white)),
-          Padding(
-              padding: EdgeInsets.only(bottom: height / 30),
-              child: _customWidget.createPasswordFieldWithLabel(
-                  _repasswordController, "Senha novamente", "", Colors.white))
-        ],
+          firstNameField,
+          lastNameField,
+          cellphoneField,
+          emailField,
+          passwordField,
+          repasswordField,
+        ]
+            .map((widget) => Padding(
+                  padding: EdgeInsets.only(bottom: height / 40),
+                  child: widget,
+                ))
+            .toList(),
       ),
     );
 
@@ -448,19 +155,15 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
       width: width / 1.2,
       child: Column(
         children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(bottom: height / 30),
-            child: radios,
-          ),
-          Padding(
-            padding: EdgeInsets.only(bottom: height / 30),
-            child: cityDropDown,
-          ),
-          Padding(
-            padding: EdgeInsets.only(bottom: height / 30),
-            child: activityList,
-          ),
-        ],
+          selfEmployedField,
+          cityField,
+          activitiesField,
+        ]
+            .map((widget) => Padding(
+                  padding: EdgeInsets.only(bottom: height / 40),
+                  child: widget,
+                ))
+            .toList(),
       ),
     );
 
@@ -468,30 +171,30 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
           Step(
               title: const Text(''),
               label: const Text('1ª Etapa'),
-              state: _activeStepIndex <= 0
-                  ? StepState.editing
-                  : StepState.complete,
-              isActive: _activeStepIndex >= 0,
+              state:
+                  activeStepIndex <= 0 ? StepState.editing : StepState.complete,
+              isActive: activeStepIndex >= 0,
               content: Center(
                 child: firstStepFields,
               )),
           Step(
               title: const Text(''),
               label: const Text('2ª Etapa'),
-              state: _activeStepIndex <= 1
-                  ? StepState.editing
-                  : StepState.complete,
-              isActive: _activeStepIndex >= 1,
+              state:
+                  activeStepIndex <= 1 ? StepState.editing : StepState.complete,
+              isActive: activeStepIndex >= 1,
               content: Center(
-                child: secondStepFields,
+                child: Form(
+                  key: secondStepFormKey,
+                  child: secondStepFields,
+                ),
               )),
           Step(
               title: const Text(''),
               label: const Text('3ª Etapa'),
-              state: _activeStepIndex <= 2
-                  ? StepState.editing
-                  : StepState.complete,
-              isActive: _activeStepIndex >= 2,
+              state:
+                  activeStepIndex <= 2 ? StepState.editing : StepState.complete,
+              isActive: activeStepIndex >= 2,
               content: Center(
                 child: thirdStepFields,
               )),
@@ -512,43 +215,45 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
-                    style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                            const Color.fromARGB(255, 59, 82, 67)),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ))),
                     onPressed: details.onStepCancel,
                     child: Text(
-                      "voltar".toUpperCase(),
+                      "VOLTAR",
                       style:
                           TextStyle(fontSize: width / 20, color: Colors.white),
                     )),
                 ElevatedButton(
-                    style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                            const Color.fromARGB(255, 59, 82, 67)),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ))),
-                    onPressed: () {
-                      if (validFields(
-                          context, _customWidget, details.currentStep)) {
-                        if (details.currentStep < 2) {
+                    onPressed: () async {
+                      if (details.currentStep == 0) {
+                        if (firstStepValidate()) {
                           setState(() {
-                            _activeStepIndex += 1;
+                            activeStepIndex += 1;
                           });
-                        } else {
-                          _handleRegister(_customWidget, context);
+                        }
+                      }
+                      if (details.currentStep == 1) {
+                        if (secondStepFormKey.currentState!.validate() &&
+                            secondStepValidate()) {
+                          setState(() {
+                            activeStepIndex += 1;
+                          });
+                        }
+                      } else if (details.currentStep == 2) {
+                        isSelfEmployed =
+                            selfEmployedController.text == "sim" ? true : false;
+                        selected =
+                            professionalService.saveActivities(activities);
+                        if (thirdStepValidate()) {
+                          utils.alert("Criando conta, aguarde...");
+                          handleRegistration();
+                          Future.delayed(const Duration(seconds: 5), () {
+                            Navigator.of(context)
+                                .pushNamed(AppRoutes.user_login);
+                          });
                         }
                       }
                     },
                     child: Text(
-                      "continuar".toUpperCase(),
+                      "AVANÇAR",
                       style:
                           TextStyle(fontSize: width / 20, color: Colors.white),
                     ))
@@ -556,22 +261,135 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
             );
           },
           type: StepperType.horizontal,
-          currentStep: _activeStepIndex,
+          currentStep: activeStepIndex,
           steps: registerSteps(),
           onStepContinue: () {
-            if (_activeStepIndex < (registerSteps().length - 1)) {
-              _activeStepIndex += 1;
+            if (activeStepIndex < (registerSteps().length - 1)) {
+              activeStepIndex += 1;
             }
             setState(() {});
           },
           onStepCancel: () {
-            _activeStepIndex == 0
+            activeStepIndex == 0
                 ? Navigator.of(context).pop()
-                : _activeStepIndex -= 1;
+                : activeStepIndex -= 1;
             setState(() {});
           },
         ),
       ),
     );
+  }
+
+  IconButton createIcon() => IconButton(
+        icon: const Icon(Icons.photo_camera, size: 40, color: Colors.white),
+        onPressed: () {
+          pickImage();
+        },
+      );
+
+  ClipOval defaultPicture() => ClipOval(
+          child: Image.asset(
+        "lib/resources/icon-atvee.jpeg",
+        width: width / 2,
+        height: height / 4,
+        fit: BoxFit.cover,
+      ));
+
+  ClipOval pickedPicture() => ClipOval(
+        child: Image.file(
+          userImage!,
+          width: width / 2,
+          height: height / 4,
+          fit: BoxFit.cover,
+        ),
+      );
+
+  Future pickImage() async {
+    try {
+      final pickedFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+
+      setState(() {
+        userImage = File(pickedFile!.path);
+      });
+    } catch (error) {
+      utils.alert("pickImage: $error");
+    }
+  }
+
+  bool firstStepValidate() {
+    if (userImage == null) {
+      utils.snack("Selecione uma imagem");
+      return false;
+    }
+    if (occupationController.text.isEmpty) {
+      utils.snack("Selecione uma das opções para Profissão");
+      return false;
+    }
+    if (!firstStepFormKey.currentState!.validate()) {
+      return false;
+    }
+    return true;
+  }
+
+  bool secondStepValidate() {
+    if (passwordController.text != repasswordController.text) {
+      utils.snack("Senhas diferentes");
+      return false;
+    }
+
+    return true;
+  }
+
+  bool thirdStepValidate() {
+    if (selfEmployedController.text.isEmpty) {
+      utils.snack("Selecione uma das opções para Profissional Autônomo");
+      return false;
+    }
+    if (cityController.text.isEmpty) {
+      utils.snack("Selecione uma das opções para Cidade");
+      return false;
+    }
+    if (selected.isEmpty) {
+      utils.snack("Selecione de uma a três atividades");
+      return false;
+    }
+    return true;
+  }
+
+  Future uploadImage() async {
+    String fileName = basename(userImage!.path);
+
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference firebaseStorageRef = storage.ref().child('user-images/$fileName');
+    UploadTask uploadTask = firebaseStorageRef.putFile(userImage!);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    taskSnapshot.ref.getDownloadURL().then((value) => url = value);
+  }
+
+  void handleRegistration() async {
+    try {
+      await uploadImage();
+      await professionalService.createCredential(
+          emailController.text, passwordController.text);
+
+      professionalUser = ProfessionalUser(
+        firstNameController.text.toUpperCase(),
+        lastNameController.text.toUpperCase(),
+        emailController.text,
+        cellphoneController.text,
+        url!,
+        false,
+        isSelfEmployed,
+        occupationController.text,
+        descriptionController.text,
+        cityController.text,
+        selected,
+      );
+
+      await professionalService.createData(professionalUser);
+    } catch (error) {
+      utils.alert("$error");
+    }
   }
 }
