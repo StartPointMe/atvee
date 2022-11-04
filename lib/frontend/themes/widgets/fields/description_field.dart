@@ -22,6 +22,7 @@ class _EmailFieldState extends State<DescriptionField> {
         labelText: "Descrição",
         hintText: "Insira uma descrição",
       ),
+      style: Theme.of(context).textTheme.bodyText2,
     );
   }
 }

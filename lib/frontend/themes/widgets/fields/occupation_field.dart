@@ -24,9 +24,9 @@ class _OccupationFieldState extends State<OccupationField> {
         hint: Padding(
           padding:
               EdgeInsets.only(left: MediaQuery.of(context).size.width / 20),
-          child: const Text(
+          child: Text(
             'Selecione uma profisssão',
-            style: TextStyle(fontSize: 14, color: Colors.black),
+            style: Theme.of(context).textTheme.subtitle2,
           ),
         ),
         items: occupations
@@ -37,7 +37,7 @@ class _OccupationFieldState extends State<OccupationField> {
                       left: MediaQuery.of(context).size.width / 20),
                   child: Text(
                     occupation.toString(),
-                    style: const TextStyle(fontSize: 14, color: Colors.black),
+                    style: Theme.of(context).textTheme.subtitle2,
                   ),
                 )))
             .toList(),

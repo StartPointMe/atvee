@@ -16,6 +16,7 @@ class _SelfEmployedFieldState extends State<SelfEmployedField> {
 
   @override
   Widget build(BuildContext context) {
+    final appTheme = Theme.of(context);
     width = MediaQuery.of(context).size.width;
     height = MediaQuery.of(context).size.height;
     widget.controller.text = "";
@@ -33,15 +34,15 @@ class _SelfEmployedFieldState extends State<SelfEmployedField> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(left: width / 20),
-            child: const Text('Profissional Autônomo?',
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold)),
+            padding: EdgeInsets.only(left: width / 30),
+            child: Text('Profissional Autônomo?',
+                style: appTheme.textTheme.subtitle2),
           ),
           Padding(
             padding: EdgeInsets.only(left: width / 30),
             child: ListTile(
-              title: const Text('Sim', style: TextStyle(color: Colors.white)),
+              tileColor: appTheme.primaryColor,
+              title: Text('Sim', style: appTheme.textTheme.subtitle1),
               leading: Radio(
                 fillColor: MaterialStateProperty.all(Colors.white),
                 value: true,
@@ -55,9 +56,10 @@ class _SelfEmployedFieldState extends State<SelfEmployedField> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(left: width / 30),
+            padding: EdgeInsets.only(top: height / 240, left: width / 30),
             child: ListTile(
-              title: const Text('Não', style: TextStyle(color: Colors.white)),
+              tileColor: appTheme.primaryColor,
+              title: Text('Não', style: appTheme.textTheme.subtitle1),
               leading: Radio(
                 fillColor: MaterialStateProperty.all(Colors.white),
                 value: false,

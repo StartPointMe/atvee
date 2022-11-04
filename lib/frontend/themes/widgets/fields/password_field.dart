@@ -31,6 +31,7 @@ class _EmailFieldState extends State<PasswordField> {
               color: Theme.of(context).primaryColor),
         ),
       ),
+      style: Theme.of(context).textTheme.bodyText2,
     );
   }
 }

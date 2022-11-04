@@ -24,12 +24,14 @@ class _FirstNameFieldState extends State<FirstNameField> {
         if (input.hasSpace()) {
           return "Sem espaços em branco";
         }
+        return null;
       },
       keyboardType: TextInputType.name,
       decoration: const InputDecoration(
         labelText: "Nome",
         hintText: "Insira o seu nome",
       ),
+      style: Theme.of(context).textTheme.bodyText2,
     );
   }
 }
