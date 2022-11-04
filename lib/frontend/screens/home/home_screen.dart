@@ -20,12 +20,9 @@ class _HomeScreenViewState extends State<HomeScreen> {
       onWillPop: () async => true,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Profissionais",
-              style: Theme.of(context).textTheme.headline1),
-          centerTitle: true,
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
-        backgroundColor: Colors.white,
+            title: Text("Profissionais",
+                style: Theme.of(context).textTheme.headline1)),
+        backgroundColor: Theme.of(context).backgroundColor,
         body: SingleChildScrollView(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

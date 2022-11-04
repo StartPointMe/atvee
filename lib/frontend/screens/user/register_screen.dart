@@ -246,8 +246,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
                           utils.alert("Criando conta, aguarde...");
                           handleRegistration();
                           Future.delayed(const Duration(seconds: 5), () {
-                            Navigator.of(context)
-                                .pushNamed(AppRoutes.user_login);
+                            Navigator.of(context).pop();
                           });
                         }
                       }
