@@ -14,12 +14,15 @@ class _CellphoneFieldState extends State<CellphoneField> {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: widget.controller,
-      validator: (input) => input!.isValidPhone() ? null : "Número de inválido",
+      validator: (input) => input!.isValidPhone()
+          ? null
+          : "Número de inválido, insira de 10 à 12 números",
       keyboardType: TextInputType.phone,
       decoration: const InputDecoration(
         labelText: "Número de Celular",
         hintText: "Insira o seu número de celular",
       ),
+      style: Theme.of(context).textTheme.bodyText2,
     );
   }
 }

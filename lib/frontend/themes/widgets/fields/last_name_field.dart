@@ -24,12 +24,14 @@ class _LastNameFieldState extends State<LastNameField> {
         if (input.hasSpace()) {
           return "Sem espaços em branco";
         }
+        return null;
       },
       keyboardType: TextInputType.name,
       decoration: const InputDecoration(
         labelText: "Sobrenome",
         hintText: "Insira o seu sobrenome",
       ),
+      style: Theme.of(context).textTheme.bodyText2,
     );
   }
 }

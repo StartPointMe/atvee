@@ -20,6 +20,7 @@ class _EmailFieldState extends State<EmailField> {
         labelText: "Endereço de email",
         hintText: "Insira o seu endereço de email",
       ),
+      style: Theme.of(context).textTheme.bodyText2,
     );
   }
 }

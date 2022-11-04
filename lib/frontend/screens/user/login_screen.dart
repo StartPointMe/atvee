@@ -25,6 +25,7 @@ class _LoginScreenViewState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appTheme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
     var height = mediaQuery.size.height;
     var width = mediaQuery.size.width;
@@ -49,10 +50,7 @@ class _LoginScreenViewState extends State<LoginScreen> {
       },
       child: Text(
         "Cadastre-se",
-        style: GoogleFonts.roboto(
-            fontSize: width / 24,
-            color: Colors.white,
-            fontWeight: FontWeight.bold),
+        style: appTheme.textTheme.subtitle2,
       ),
     );
 
@@ -64,21 +62,8 @@ class _LoginScreenViewState extends State<LoginScreen> {
       },
       child: Text(
         "Esqueceu a senha?",
-        style: GoogleFonts.roboto(
-            fontSize: width / 24,
-            color: Colors.white,
-            fontWeight: FontWeight.bold),
+        style: appTheme.textTheme.subtitle2,
       ),
-    );
-
-    final registerFields = Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Padding(padding: EdgeInsets.only(top: height / 30)),
-        emailField,
-        Padding(padding: EdgeInsets.only(top: height / 30)),
-        passwordField
-      ],
     );
 
     final logInButton = ElevatedButton(
@@ -94,34 +79,32 @@ class _LoginScreenViewState extends State<LoginScreen> {
       },
       child: Text(
         "ENTRAR",
-        style: GoogleFonts.anton(fontSize: 30, color: Colors.white),
+        style: appTheme.textTheme.button,
       ),
     );
 
-    final fields = Container(
+    final fields = SizedBox(
       width: width / 1.2,
-      decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 59, 82, 67),
-          borderRadius: BorderRadius.circular(10)),
       child: Column(
         children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(bottom: height / 40),
-            child: registerFields,
-          ),
+          emailField,
+          passwordField,
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [registerAnchor, forgetPasswordAnchor],
           ),
-        ],
+        ]
+            .map((widget) => Padding(
+                  padding: EdgeInsets.only(bottom: height / 40),
+                  child: widget,
+                ))
+            .toList(),
       ),
     );
 
     return Scaffold(
       appBar: AppBar(
         title: const Text("Login"),
-        centerTitle: true,
-        backgroundColor: Colors.lightGreen,
       ),
       backgroundColor: Colors.white,
       body: DoubleBackToCloseApp(

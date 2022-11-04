@@ -76,6 +76,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appTheme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
     height = mediaQuery.size.height;
     width = mediaQuery.size.width;
@@ -170,7 +171,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
     List<Step> registerSteps() => [
           Step(
               title: const Text(''),
-              label: const Text('1ª Etapa'),
+              label: Text('1ª Etapa', style: appTheme.textTheme.headline2),
               state:
                   activeStepIndex <= 0 ? StepState.editing : StepState.complete,
               isActive: activeStepIndex >= 0,
@@ -179,7 +180,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
               )),
           Step(
               title: const Text(''),
-              label: const Text('2ª Etapa'),
+              label: Text('2ª Etapa', style: appTheme.textTheme.headline2),
               state:
                   activeStepIndex <= 1 ? StepState.editing : StepState.complete,
               isActive: activeStepIndex >= 1,
@@ -191,7 +192,7 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
               )),
           Step(
               title: const Text(''),
-              label: const Text('3ª Etapa'),
+              label: Text('3ª Etapa', style: appTheme.textTheme.headline2),
               state:
                   activeStepIndex <= 2 ? StepState.editing : StepState.complete,
               isActive: activeStepIndex >= 2,
@@ -205,11 +206,10 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Cadastro"),
-          centerTitle: true,
-          backgroundColor: Colors.lightGreen,
         ),
-        backgroundColor: Colors.amber,
+        backgroundColor: appTheme.backgroundColor,
         body: Stepper(
+          elevation: 4,
           controlsBuilder: (context, details) {
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -281,7 +281,8 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
   }
 
   IconButton createIcon() => IconButton(
-        icon: const Icon(Icons.photo_camera, size: 40, color: Colors.white),
+        icon: const Icon(Icons.photo_camera,
+            size: 40, color: Color.fromARGB(255, 59, 82, 67)),
         onPressed: () {
           pickImage();
         },

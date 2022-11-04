@@ -21,6 +21,7 @@ class _RedefinePasswordScreenViewState extends State<RedefinePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appTheme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
     final height = mediaQuery.size.height;
     final width = mediaQuery.size.width;
@@ -30,11 +31,16 @@ class _RedefinePasswordScreenViewState extends State<RedefinePasswordScreen> {
     final emailField = EmailField(controller: emailController);
 
     final fields = SizedBox(
-      width: width,
+      width: width / 1.2,
       child: Column(
         children: [
+          Text(
+              "Insira o endereço de e-mail que utilizou durante o cadastro, "
+              "após verificarmos se o mesmo está cadastrado no sistema, enviaremos "
+              "um email para que posssa redefinir a senha.",
+              style: appTheme.textTheme.subtitle2),
           Padding(
-            padding: EdgeInsets.only(bottom: height / 40),
+            padding: EdgeInsets.only(top: height / 20, bottom: height / 40),
             child: emailField,
           )
         ],
@@ -53,23 +59,28 @@ class _RedefinePasswordScreenViewState extends State<RedefinePasswordScreen> {
         },
         child: Text(
           "ENVIAR",
-          style: GoogleFonts.anton(fontSize: 30, color: Colors.white),
+          style: appTheme.textTheme.button,
         ));
 
     return WillPopScope(
       onWillPop: () async => true,
       child: Scaffold(
-        backgroundColor: Colors.amber,
+        appBar: AppBar(
+          title: const Text("Redefinição de Senha"),
+        ),
+        backgroundColor: appTheme.backgroundColor,
         body: Form(
           key: formKey,
-          child: Column(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.only(bottom: height / 20),
-                child: fields,
+                padding: EdgeInsets.only(top: height / 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [fields, redefineButton],
+                ),
               ),
-              redefineButton
             ],
           ),
         ),

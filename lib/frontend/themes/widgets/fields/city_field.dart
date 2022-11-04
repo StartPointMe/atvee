@@ -16,13 +16,6 @@ class _CityFieldState extends State<CityField> {
 
   @override
   Widget build(BuildContext context) {
-    // setState(() {
-    //   if (selectedCity.isNotEmpty) {
-    //     // widget.controller.text = selectedCity;
-    //     // alert(widget.controller.text);
-    //   }
-    // });
-
     return DropdownButtonHideUnderline(
       child: DropdownButton2(
         buttonWidth: MediaQuery.of(context).size.width / 1.3,
@@ -31,9 +24,9 @@ class _CityFieldState extends State<CityField> {
         hint: Padding(
           padding:
               EdgeInsets.only(left: MediaQuery.of(context).size.width / 20),
-          child: const Text(
+          child: Text(
             'Selecione uma cidade',
-            style: TextStyle(fontSize: 14, color: Colors.black),
+            style: Theme.of(context).textTheme.subtitle2,
           ),
         ),
         items: cities
@@ -44,7 +37,7 @@ class _CityFieldState extends State<CityField> {
                       left: MediaQuery.of(context).size.width / 20),
                   child: Text(
                     city,
-                    style: const TextStyle(fontSize: 14, color: Colors.black),
+                    style: Theme.of(context).textTheme.subtitle2,
                   ),
                 )))
             .toList(),
