@@ -16,39 +16,45 @@ class _CityFieldState extends State<CityField> {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonHideUnderline(
-      child: DropdownButton2(
-        buttonWidth: MediaQuery.of(context).size.width / 1.3,
-        buttonDecoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(10)),
-        hint: Padding(
-          padding:
-              EdgeInsets.only(left: MediaQuery.of(context).size.width / 20),
-          child: Text(
-            'Selecione uma cidade',
-            style: Theme.of(context).textTheme.subtitle2,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Cidade de Atuação', style: Theme.of(context).textTheme.subtitle2),
+        DropdownButtonHideUnderline(
+          child: DropdownButton2(
+            buttonWidth: MediaQuery.of(context).size.width / 1.3,
+            buttonDecoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+            hint: Padding(
+              padding:
+                  EdgeInsets.only(left: MediaQuery.of(context).size.width / 20),
+              child: Text(
+                'Selecione uma cidade',
+                style: Theme.of(context).textTheme.subtitle2,
+              ),
+            ),
+            items: cities
+                .map((city) => DropdownMenuItem<String>(
+                    value: city,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          left: MediaQuery.of(context).size.width / 20),
+                      child: Text(
+                        city,
+                        style: Theme.of(context).textTheme.subtitle2,
+                      ),
+                    )))
+                .toList(),
+            value: selectedCity,
+            onChanged: (value) {
+              setState(() {
+                selectedCity = value;
+                widget.controller.text = selectedCity.toString();
+              });
+            },
           ),
-        ),
-        items: cities
-            .map((city) => DropdownMenuItem<String>(
-                value: city,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                      left: MediaQuery.of(context).size.width / 20),
-                  child: Text(
-                    city,
-                    style: Theme.of(context).textTheme.subtitle2,
-                  ),
-                )))
-            .toList(),
-        value: selectedCity,
-        onChanged: (value) {
-          setState(() {
-            selectedCity = value;
-            widget.controller.text = selectedCity.toString();
-          });
-        },
-      ),
+        )
+      ],
     );
   }
 

@@ -16,39 +16,45 @@ class _OccupationFieldState extends State<OccupationField> {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonHideUnderline(
-      child: DropdownButton2(
-        buttonWidth: MediaQuery.of(context).size.width / 1.3,
-        buttonDecoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(10)),
-        hint: Padding(
-          padding:
-              EdgeInsets.only(left: MediaQuery.of(context).size.width / 20),
-          child: Text(
-            'Selecione uma profisssão',
-            style: Theme.of(context).textTheme.subtitle2,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Profissão', style: Theme.of(context).textTheme.subtitle2),
+        DropdownButtonHideUnderline(
+          child: DropdownButton2(
+            buttonWidth: MediaQuery.of(context).size.width / 1.3,
+            buttonDecoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+            hint: Padding(
+              padding:
+                  EdgeInsets.only(left: MediaQuery.of(context).size.width / 20),
+              child: Text(
+                'Selecione uma profisssão',
+                style: Theme.of(context).textTheme.subtitle2,
+              ),
+            ),
+            items: occupations
+                .map((occupation) => DropdownMenuItem<String>(
+                    value: occupation.toString(),
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          left: MediaQuery.of(context).size.width / 20),
+                      child: Text(
+                        occupation.toString(),
+                        style: Theme.of(context).textTheme.subtitle2,
+                      ),
+                    )))
+                .toList(),
+            value: selectedOccupation,
+            onChanged: (value) {
+              setState(() {
+                selectedOccupation = value;
+                widget.controller.text = selectedOccupation as String;
+              });
+            },
           ),
-        ),
-        items: occupations
-            .map((occupation) => DropdownMenuItem<String>(
-                value: occupation.toString(),
-                child: Padding(
-                  padding: EdgeInsets.only(
-                      left: MediaQuery.of(context).size.width / 20),
-                  child: Text(
-                    occupation.toString(),
-                    style: Theme.of(context).textTheme.subtitle2,
-                  ),
-                )))
-            .toList(),
-        value: selectedOccupation,
-        onChanged: (value) {
-          setState(() {
-            selectedOccupation = value;
-            widget.controller.text = selectedOccupation as String;
-          });
-        },
-      ),
+        )
+      ],
     );
   }
 }

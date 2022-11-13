@@ -107,7 +107,9 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
         SelfEmployedField(controller: selfEmployedController);
     final cityField = CityField(controller: cityController);
     final activitiesField = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text('Atividades', style: appTheme.textTheme.subtitle2),
         ActivityCheckboxWidget(item: activities[0]),
         ActivityCheckboxWidget(item: activities[1]),
         ActivityCheckboxWidget(item: activities[2]),
@@ -199,82 +201,94 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
               content: Center(
                 child: thirdStepFields,
               )),
+          Step(
+            title: const Text(''),
+            label: Text('Fim', style: appTheme.textTheme.headline2),
+            state:
+                activeStepIndex <= 3 ? StepState.editing : StepState.complete,
+            isActive: activeStepIndex >= 3,
+            content: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 60),
+                  child: Text(
+                      'Após ser redirecionado(a) para a tela de login, acesse o link de verificação que foi enviado ao email de cadastro antes de iniciar sessão.',
+                      style: appTheme.textTheme.subtitle2),
+                ),
+              ],
+            ),
+          ),
         ];
 
-    return WillPopScope(
-      onWillPop: () async => true,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Cadastro"),
-        ),
-        backgroundColor: appTheme.backgroundColor,
-        body: Stepper(
-          elevation: 4,
-          controlsBuilder: (context, details) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                    onPressed: details.onStepCancel,
-                    child: Text(
-                      "VOLTAR",
-                      style:
-                          TextStyle(fontSize: width / 20, color: Colors.white),
-                    )),
-                ElevatedButton(
-                    onPressed: () async {
-                      if (details.currentStep == 0) {
-                        if (firstStepValidate()) {
-                          setState(() {
-                            activeStepIndex += 1;
-                          });
-                        }
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Cadastro"),
+      ),
+      backgroundColor: appTheme.backgroundColor,
+      body: Stepper(
+        elevation: 4,
+        controlsBuilder: (context, details) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                  onPressed: details.onStepCancel,
+                  child: Text(
+                    "VOLTAR",
+                    style: TextStyle(fontSize: width / 20, color: Colors.white),
+                  )),
+              ElevatedButton(
+                  onPressed: () async {
+                    if (details.currentStep == 0) {
+                      if (firstStepValidate()) {
+                        setState(() {
+                          activeStepIndex += 1;
+                        });
                       }
-                      if (details.currentStep == 1) {
-                        if (secondStepFormKey.currentState!.validate() &&
-                            secondStepValidate()) {
-                          setState(() {
-                            activeStepIndex += 1;
-                          });
-                        }
-                      } else if (details.currentStep == 2) {
-                        isSelfEmployed =
-                            selfEmployedController.text == "sim" ? true : false;
-                        selected =
-                            professionalService.saveActivities(activities);
-                        if (thirdStepValidate()) {
-                          utils.alert("Criando conta, aguarde...");
-                          handleRegistration();
-                          Future.delayed(const Duration(seconds: 5), () {
-                            Navigator.of(context).pop();
-                          });
-                        }
+                    }
+                    if (details.currentStep == 1) {
+                      if (secondStepFormKey.currentState!.validate() &&
+                          secondStepValidate()) {
+                        setState(() {
+                          activeStepIndex += 1;
+                        });
                       }
-                    },
-                    child: Text(
-                      "AVANÇAR",
-                      style:
-                          TextStyle(fontSize: width / 20, color: Colors.white),
-                    ))
-              ],
-            );
-          },
-          type: StepperType.horizontal,
-          currentStep: activeStepIndex,
-          steps: registerSteps(),
-          onStepContinue: () {
-            if (activeStepIndex < (registerSteps().length - 1)) {
-              activeStepIndex += 1;
-            }
-            setState(() {});
-          },
-          onStepCancel: () {
-            activeStepIndex == 0
-                ? Navigator.of(context).pop()
-                : activeStepIndex -= 1;
-            setState(() {});
-          },
-        ),
+                    } else if (details.currentStep == 2) {
+                      isSelfEmployed =
+                          selfEmployedController.text == "sim" ? true : false;
+                      selected = professionalService.saveActivities(activities);
+                      if (thirdStepValidate()) {
+                        setState(() {
+                          activeStepIndex += 1;
+                        });
+                      }
+                    } else if (details.currentStep == 3) {
+                      handleRegistration();
+                      Navigator.of(context).maybePop();
+                    }
+                  },
+                  child: Text(
+                    "AVANÇAR",
+                    style: TextStyle(fontSize: width / 20, color: Colors.white),
+                  ))
+            ],
+          );
+        },
+        type: StepperType.horizontal,
+        currentStep: activeStepIndex,
+        steps: registerSteps(),
+        onStepContinue: () {
+          if (activeStepIndex < (registerSteps().length - 1)) {
+            activeStepIndex += 1;
+          }
+          setState(() {});
+        },
+        onStepCancel: () {
+          activeStepIndex == 0
+              ? Navigator.of(context).pop()
+              : activeStepIndex -= 1;
+          setState(() {});
+        },
       ),
     );
   }
@@ -387,7 +401,9 @@ class _RegisterScreenViewState extends State<RegisterScreen> {
         selected,
       );
 
-      await professionalService.createData(professionalUser);
+      await professionalService
+          .createData(professionalUser)
+          .then((void value) => {utils.alert('Criando conta, aguarde...')});
     } catch (error) {
       utils.alert("$error");
     }
