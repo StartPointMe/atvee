@@ -53,50 +53,54 @@ class Utils {
             width: MediaQuery.of(context).size.width,
             child: Column(
               children: [
-                Material(
-                  color: Theme.of(context).primaryColor,
-                  borderRadius: BorderRadius.circular(5),
+                userClip(userPic, selfEmployed),
+                Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Theme.of(context).primaryColor),
+                  width: MediaQuery.of(context).size.width,
                   child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      children: [
-                        userClip(userPic, selfEmployed),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              name,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            Text(
-                              occupation,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            Text(
-                              area,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            selfEmployed == true
-                                ? const Text("Profissional Autônomo\n",
-                                    style: TextStyle(color: Colors.white))
-                                : const Text(""),
-                          ],
-                        ),
-                      ]
-                          .map((widget) => Padding(
-                                padding: const EdgeInsets.only(right: 10),
-                                child: widget,
-                              ))
-                          .toList(),
-                    ),
-                  ),
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          Text(
+                            occupation,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          Text(
+                            area,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          selfEmployed == true
+                              ? const Text("Profissional Autônomo\n",
+                                  style: TextStyle(color: Colors.white))
+                              : const Text(""),
+                        ]
+                            .map((widget) => Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 2, left: 15),
+                                  child: widget,
+                                ))
+                            .toList(),
+                      )),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 20),
+                  padding: const EdgeInsets.only(left: 10),
                   child: Text(description,
-                      style: Theme.of(context).textTheme.bodyText2),
+                      style:
+                          const TextStyle(color: Colors.black, fontSize: 18)),
                 ),
-              ],
+              ]
+                  .map((widget) => Padding(
+                        padding: const EdgeInsets.only(bottom: 15),
+                        child: widget,
+                      ))
+                  .toList(),
             ),
           ),
         ),
