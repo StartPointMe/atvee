@@ -4,7 +4,6 @@ import 'package:atvee/frontend/themes/widgets/fields/email_field.dart';
 import 'package:atvee/frontend/themes/widgets/fields/password_field.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../themes/routes.dart';
 
@@ -70,7 +69,6 @@ class _LoginScreenViewState extends State<LoginScreen> {
       onPressed: () async {
         if (formKey.currentState!.validate()) {
           if (await handleLogin()) {
-            utils.alert("Aguarde...");
             Future.delayed(const Duration(seconds: 5), () {
               Navigator.of(context).pushNamed(AppRoutes.home);
             });
